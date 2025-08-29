@@ -2,64 +2,58 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SuratMasuk;
 use Illuminate\Http\Request;
+use App\Models\SuratMasuk;
 
 class SuratMasukController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $suratMasuks = SuratMasuk::latest()->paginate(10);
+        return view('surat-masuk.index', compact('suratMasuks'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('surat-masuk.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nomor_surat' => 'required',
+            'pengirim' => 'required',
+            'tanggal_masuk' => 'required|date',
+            'perihal' => 'required',
+        ]);
+
+        SuratMasuk::create($request->all());
+
+        return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(SuratMasuk $suratMasuk)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(SuratMasuk $suratMasuk)
     {
-        //
+        return view('surat-masuk.edit', compact('suratMasuk'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, SuratMasuk $suratMasuk)
     {
-        //
+        $request->validate([
+            'nomor_surat' => 'required',
+            'pengirim' => 'required',
+            'tanggal_masuk' => 'required|date',
+            'perihal' => 'required',
+        ]);
+
+        $suratMasuk->update($request->all());
+
+        return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil diupdate.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(SuratMasuk $suratMasuk)
     {
-        //
+        $suratMasuk->delete();
+        return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil dihapus.');
     }
 }

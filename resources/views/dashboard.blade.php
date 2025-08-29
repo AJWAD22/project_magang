@@ -9,26 +9,30 @@
         <!-- Grid Kartu -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <!-- Surat Masuk -->
-            <div class="bg-cyan-400 p-6 rounded-lg shadow-md text-white">
-                <div class="flex items-center">
-                    <i class="fas fa-inbox text-xl mr-3"></i>
-                    <div>
-                        <h3 class="text-lg font-medium">Surat Masuk</h3>
-                        <p class="text-2xl font-bold">{{ $suratMasuk }}</p>
+            <a href="{{ route('surat-masuk.index') }}" class="block transform transition-transform duration-200 hover:scale-105">
+                <div class="bg-cyan-400 p-6 rounded-lg shadow-md text-white h-full">
+                    <div class="flex items-center">
+                        <i class="fas fa-inbox text-xl mr-3"></i>
+                        <div>
+                            <h3 class="text-lg font-medium">Surat Masuk</h3>
+                            <p class="text-2xl font-bold">{{ $suratMasuk }}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
 
             <!-- Surat Keluar -->
-            <div class="bg-blue-500 p-6 rounded-lg shadow-md text-white">
-                <div class="flex items-center">
-                    <i class="fas fa-paper-plane text-xl mr-3"></i>
-                    <div>
-                        <h3 class="text-lg font-medium">Surat Keluar</h3>
-                        <p class="text-2xl font-bold">{{ $suratKeluar }}</p>
+            <a href="{{ route('surat-keluar.index') }}" class="block transform transition-transform duration-200 hover:scale-105">
+                <div class="bg-blue-500 p-6 rounded-lg shadow-md text-white h-full">
+                    <div class="flex items-center">
+                        <i class="fas fa-paper-plane text-xl mr-3"></i>
+                        <div>
+                            <h3 class="text-lg font-medium">Surat Keluar</h3>
+                            <p class="text-2xl font-bold">{{ $suratKeluar }}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
 
             <!-- Pengguna -->
             <div class="bg-purple-500 p-6 rounded-lg shadow-md text-white">

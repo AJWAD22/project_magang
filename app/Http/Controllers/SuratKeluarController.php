@@ -2,64 +2,80 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SuratKeluar;
 use Illuminate\Http\Request;
+use App\Models\SuratKeluar;
 
 class SuratKeluarController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Tampilkan daftar surat keluar.
      */
     public function index()
     {
-        //
+        $suratKeluars = SuratKeluar::latest()->paginate(10);
+        return view('surat-keluar.index', compact('suratKeluars'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Tampilkan form untuk tambah surat keluar baru.
      */
     public function create()
     {
-        //
+        return view('surat-keluar.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Simpan surat keluar baru ke database.
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nomor_sururat' => 'required|string|max:50',
+            'penerima' => 'required|string|max:100',
+            'tanggal_keluar' => 'required|date',
+            'perihal' => 'required|string',
+        ]);
+
+        SuratKeluar::create($request->all());
+
+        return redirect()->route('surat-keluar.index')
+                         ->with('success', 'Surat keluar berhasil ditambahkan.');
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(SuratKeluar $suratKeluar)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * Tampilkan form edit surat keluar.
      */
     public function edit(SuratKeluar $suratKeluar)
     {
-        //
+        return view('surat-keluar.edit', compact('suratKeluar'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update surat keluar di database.
      */
     public function update(Request $request, SuratKeluar $suratKeluar)
     {
-        //
+        $request->validate([
+            'nomor_surat' => 'required|string|max:50',
+            'penerima' => 'required|string|max:100',
+            'tanggal_keluar' => 'required|date',
+            'perihal' => 'required|string',
+        ]);
+
+        $suratKeluar->update($request->all());
+
+        return redirect()->route('surat-keluar.index')
+                         ->with('success', 'Surat keluar berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Hapus surat keluar dari database.
      */
     public function destroy(SuratKeluar $suratKeluar)
     {
-        //
+        $suratKeluar->delete();
+
+        return redirect()->route('surat-keluar.index')
+                         ->with('success', 'Surat keluar berhasil dihapus.');
     }
 }
