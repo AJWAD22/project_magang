@@ -2,10 +2,19 @@
 
 namespace App\Http\Controllers;
 
-class AboutController extends Controller
+use Illuminate\Http\Request;
+use App\Models\SuratMasuk;
+use App\Models\SuratKeluar;
+use App\Models\User;
+
+class DashboardController extends Controller
 {
     public function index()
     {
-        return view('about');
+        $suratMasuk = SuratMasuk::count();
+        $suratKeluar = SuratKeluar::count();
+        $pengguna = User::count();
+
+        return view('dashboard', compact('suratMasuk', 'suratKeluar', 'pengguna'));
     }
 }

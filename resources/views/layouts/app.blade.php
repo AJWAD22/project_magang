@@ -15,25 +15,27 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div class="min-h-screen bg-gray-200 text-gray-800">
             
             <!-- 🔹 Navbar -->
-            <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+            <nav class="bg-[#736058] border-b border-gray-400 text-white shadow-sm">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
                         
-                        <!-- Kiri: Menu -->
+                        <!-- Kiri: Logo & Menu -->
                         <div class="flex">
+                            <!-- Logo -->
                             <div class="shrink-0 flex items-center">
-                                <a href="{{ url('/') }}" class="text-lg font-bold text-gray-700 dark:text-gray-200">
-                                    {{ config('app.name', 'Laravel') }}
+                                <a href="{{ url('/') }}" class="text-xl font-bold text-white">
+                                    {{ config('app.name', 'MYbini') }}
                                 </a>
                             </div>
+
+                            <!-- Menu -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <a href="/home" class="text-gray-700 dark:text-gray-200 hover:text-blue-500">Home</a>
-                                <a href="/about" class="text-gray-700 dark:text-gray-200 hover:text-blue-500">About</a>
-                                <a href="/dashboard" class="text-gray-700 dark:text-gray-200 hover:text-blue-500">Dashboard</a>
-                                <a href="/contact" class="text-gray-700 dark:text-gray-200 hover:text-blue-500">Contact</a>
+                                <a href="/dashboard" class="text-white hover:text-blue-200 hover:underline px-3 py-2 font-medium">Dashboard</a>
+                                <a href="/about" class="text-white hover:text-blue-200 hover:underline px-3 py-2 font-medium">About</a>
+                                <a href="/contact" class="text-white hover:text-blue-200 hover:underline px-3 py-2 font-medium">Contact</a>
                             </div>
                         </div>
 
@@ -43,7 +45,7 @@
                                 <div class="ml-3 relative">
                                     <x-dropdown align="right" width="48">
                                         <x-slot name="trigger">
-                                            <button class="flex items-center text-sm font-medium text-gray-500 dark:text-gray-200 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                                            <button class="flex items-center text-sm font-medium text-white hover:text-gray-200 focus:outline-none transition ease-in-out duration-150">
                                                 <div>{{ Auth::user()->name }}</div>
                                                 <div class="ml-1">
                                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -71,8 +73,8 @@
                                     </x-dropdown>
                                 </div>
                             @else
-                                <a href="{{ route('login') }}" class="text-gray-700 dark:text-gray-200 hover:text-blue-500 px-3">Login</a>
-                                <a href="{{ route('register') }}" class="text-gray-700 dark:text-gray-200 hover:text-blue-500 px-3">Register</a>
+                                <a href="{{ route('login') }}" class="text-white hover:text-blue-200 px-3 py-2">Login</a>
+                                <a href="{{ route('register') }}" class="text-white hover:text-blue-200 px-3 py-2">Register</a>
                             @endauth
                         </div>
                     </div>
@@ -81,7 +83,7 @@
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow">
+                <header class="bg-white shadow-sm border-b border-gray-300 mt-4 mx-4 rounded-t-lg">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
@@ -89,7 +91,7 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main class="py-8">
                 {{ $slot }}
             </main>
         </div>
