@@ -1,51 +1,80 @@
-<x-app-layout>
-    <div class="py-8 px-4 max-w-7xl mx-auto">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">📤 Daftar Surat Keluar</h1>
+@extends('layouts.admin')
 
-        <div class="mb-6">
-            <a href="{{ route('surat-keluar.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow">
-                + Tambah Surat Keluar
-            </a>
-        </div>
+@section('title', 'Daftar Surat Keluar')
 
-        <div class="bg-white shadow-md rounded-lg overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nomor Surat</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penerima</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal Keluar</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Perihal</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach ($suratKeluars as $surat)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm">{{ $loop->iteration }}</td>
-                            <td class="px-6 py-4 text-sm">{{ $surat->nomor_surat }}</td>
-                            <td class="px-6 py-4 text-sm">{{ $surat->penerima }}</td>
-                            <td class="px-6 py-4 text-sm">{{ $surat->tanggal_keluar }}</td>
-                            <td class="px-6 py-4 text-sm">{{ Str::limit($surat->perihal, 50) }}</td>
-                            <td class="px-6 py-4 text-sm">
-                                <a href="{{ route('surat-keluar.edit', $surat->id) }}" class="text-yellow-600 mr-3">Edit</a>
-                                <form action="{{ route('surat-keluar.destroy', $surat->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600" onclick="return confirm('Yakin hapus?')">
-                                        Hapus
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        <div class="mt-4">
-            {{ $suratKeluars->links() }}
-        </div>
+@section('content')
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">Daftar Surat Keluar</h4>
+        <a href="{{ route('surat-keluar.create') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Tambah Surat
+        </a>
     </div>
-</x-app-layout>
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if($letters->isEmpty())
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <p class="mb-0">Belum ada surat keluar.</p>
+            </div>
+        </div>
+    @else
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nomor Surat</th>
+                                <th>Tujuan</th>
+                                <th>Perihal</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($letters as $letter)
+                            <tr>
+                                <td>{{ $letter->nomor_surat }}</td>
+                                <td>{{ $letter->tujuan }}</td>
+                                <td>{{ $letter->perihal }}</td>
+                                <td>
+                                    @if($letter->file_path)
+                                        <span class="badge bg-success">Tersedia</span>
+                                    @else
+                                        <span class="badge bg-warning">Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="{{ route('surat-keluar.edit', $letter) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('surat-keluar.destroy', $letter) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus surat ini?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-3">
+                    {{ $letters->links() }}
+                </div>
+            </div>
+        </div>
+    @endif
+</div>
+@endsection

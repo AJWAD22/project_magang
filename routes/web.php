@@ -1,45 +1,47 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SuratMasukController;
-use App\Http\Controllers\SuratKeluarController;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SuratKeluarController;
+use App\Http\Controllers\ArsipSuratController;
 
-// Redirect halaman utama ke home
+// Redirect root ke dashboard jika login, atau ke login jika belum
 Route::get('/', function () {
-    return redirect()->route('login');
+    return Auth::check() ? redirect()->route('dashboard') : redirect()->route('login');
 });
 
-// Home
-Route::get('/home', function () {
-    return view('home');
-})->name('home');
+// Group route yang dilindungi autentikasi
+Route::middleware(['auth'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-// About
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
+    // Surat Keluar (CRUD)
+    Route::resource('surat-keluar', SuratKeluarController::class)->names([
+        'index' => 'surat-keluar.index',
+        'create' => 'surat-keluar.create',
+        'store' => 'surat-keluar.store',
+        'show' => 'surat-keluar.show',
+        'edit' => 'surat-keluar.edit',
+        'update' => 'surat-keluar.update',
+        'destroy' => 'surat-keluar.destroy',
+    ]);
 
-// Contact
-Route::get('/contact', function () {
-    return view('contact');
-})->name('contact');
+    // Arsip Surat (CRUD + download)
+    Route::resource('arsip-surat', ArsipSuratController::class)->names([
+        'index' => 'arsip-surat.index',
+        'create' => 'arsip-surat.create',
+        'store' => 'arsip-surat.store',
+        'show' => 'arsip-surat.show',
+        'edit' => 'arsip-surat.edit',
+        'update' => 'arsip-surat.update',
+        'destroy' => 'arsip-surat.destroy',
+    ]);
 
-// Dashboard (hanya bisa diakses setelah login)
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-// Resource untuk surat masuk/keluar
-Route::resource('surat-masuk', SuratMasukController::class);
-Route::resource('surat-keluar', SuratKeluarController::class);
-
-// Profile (default dari Jetstream/Breeze)
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Download file arsip
+    Route::get('arsip-surat/{arsipSurat}/download', [ArsipSuratController::class, 'download'])
+        ->name('arsip-surat.download');
 });
 
+// Autentikasi (login, register, forgot password, dll)
 require __DIR__.'/auth.php';

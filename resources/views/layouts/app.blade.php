@@ -8,82 +8,60 @@
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+ <!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- Custom CSS -->
+<style>
+    body {
+        background-color: #111827;
+        color: #f3f4f6;
+    }
+    .card {
+        background-color: #1e293b;
+        border: none;
+        color: #f3f4f6;
+    }
+    .card-header {
+        background-color: #334155;
+        border-bottom: 1px solid #475569;
+    }
+    .table {
+        background-color: #1e293b;
+        color: #f3f4f6;
+    }
+    .table th,
+    .table td {
+        border-color: #475569;
+    }
+    .btn-primary {
+        background-color: #3b82f6;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #2563eb;
+    }
+    .badge-success {
+        background-color: #10b981;
+    }
+    .badge-warning {
+        background-color: #ca8a04;
+    }
+</style>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-200 text-gray-800">
-            
-            <!-- 🔹 Navbar -->
-            <nav class="bg-[#736058] border-b border-gray-400 text-white shadow-sm">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-16">
-                        
-                        <!-- Kiri: Logo & Menu -->
-                        <div class="flex">
-                            <!-- Logo -->
-                            <div class="shrink-0 flex items-center">
-                                <a href="{{ url('/') }}" class="text-xl font-bold text-white">
-                                    {{ config('app.name', 'MYbini') }}
-                                </a>
-                            </div>
-
-                            <!-- Menu -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <a href="/dashboard" class="text-white hover:text-blue-200 hover:underline px-3 py-2 font-medium">Dashboard</a>
-                                <a href="/about" class="text-white hover:text-blue-200 hover:underline px-3 py-2 font-medium">About</a>
-                                <a href="/contact" class="text-white hover:text-blue-200 hover:underline px-3 py-2 font-medium">Contact</a>
-                            </div>
-                        </div>
-
-                        <!-- Kanan: Auth -->
-                        <div class="hidden sm:flex sm:items-center sm:ml-6">
-                            @auth
-                                <div class="ml-3 relative">
-                                    <x-dropdown align="right" width="48">
-                                        <x-slot name="trigger">
-                                            <button class="flex items-center text-sm font-medium text-white hover:text-gray-200 focus:outline-none transition ease-in-out duration-150">
-                                                <div>{{ Auth::user()->name }}</div>
-                                                <div class="ml-1">
-                                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.25 8.27a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
-                                                    </svg>
-                                                </div>
-                                            </button>
-                                        </x-slot>
-
-                                        <x-slot name="content">
-                                            <x-dropdown-link :href="route('profile.edit')">
-                                                {{ __('Profile') }}
-                                            </x-dropdown-link>
-
-                                            <!-- Logout -->
-                                            <form method="POST" action="{{ route('logout') }}">
-                                                @csrf
-                                                <x-dropdown-link :href="route('logout')"
-                                                        onclick="event.preventDefault();
-                                                                    this.closest('form').submit();">
-                                                    {{ __('Log Out') }}
-                                                </x-dropdown-link>
-                                            </form>
-                                        </x-slot>
-                                    </x-dropdown>
-                                </div>
-                            @else
-                                <a href="{{ route('login') }}" class="text-white hover:text-blue-200 px-3 py-2">Login</a>
-                                <a href="{{ route('register') }}" class="text-white hover:text-blue-200 px-3 py-2">Register</a>
-                            @endauth
-                        </div>
-                    </div>
-                </div>
-            </nav>
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+            @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white shadow-sm border-b border-gray-300 mt-4 mx-4 rounded-t-lg">
+                <header class="bg-white dark:bg-gray-800 shadow">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
@@ -91,8 +69,8 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="py-8">
-                {{ $slot }}
+            <main>
+                @yield('content')
             </main>
         </div>
     </body>

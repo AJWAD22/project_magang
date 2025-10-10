@@ -2,77 +2,127 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\SuratKeluar;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SuratKeluarController extends Controller
 {
     /**
-     * Tampilkan daftar surat keluar.
+     * Menampilkan daftar surat keluar.
      */
     public function index()
     {
-        $suratKeluars = SuratKeluar::latest()->paginate(10);
-        return view('surat-keluar.index', compact('suratKeluars'));
+        $letters = SuratKeluar::latest()->get();
+        $suratKeluarCount = SuratKeluar::count();
+        $arsipSuratCount = \App\Models\ArsipSurat::count();
+
+        return view('surat-keluar.index', compact('letters', 'suratKeluarCount', 'arsipSuratCount'));
     }
 
     /**
-     * Tampilkan form untuk tambah surat keluar baru.
+     * Menampilkan form untuk membuat surat keluar baru.
      */
     public function create()
     {
-        return view('surat-keluar.create');
+        $suratKeluarCount = SuratKeluar::count();
+        $arsipSuratCount = \App\Models\ArsipSurat::count();
+
+        return view('surat-keluar.create', compact('suratKeluarCount', 'arsipSuratCount'));
     }
 
     /**
-     * Simpan surat keluar baru ke database.
+     * Menyimpan surat keluar baru ke database.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'nomor_sururat' => 'required|string|max:50',
-            'penerima' => 'required|string|max:100',
-            'tanggal_keluar' => 'required|date',
-            'perihal' => 'required|string',
+            'nomor_surat' => 'required|string|max:100|unique:surat_keluar,nomor_surat',
+            'tanggal_surat' => 'required|date',
+            'tujuan' => 'required|string|max:255',
+            'perihal' => 'required|string|max:255',
+            'file' => 'required|file|mimes:pdf|max:5120', // maks 5 MB
         ]);
 
-        SuratKeluar::create($request->all());
+        $filePath = $request->file('file')->store('surat-keluar', 'public');
+
+        SuratKeluar::create([
+            'nomor_surat' => $request->nomor_surat,
+            'tanggal_surat' => $request->tanggal_surat,
+            'tujuan' => $request->tujuan,
+            'perihal' => $request->perihal,
+            'file_path' => $filePath,
+        ]);
 
         return redirect()->route('surat-keluar.index')
-                         ->with('success', 'Surat keluar berhasil ditambahkan.');
+                         ->with('success', 'Surat keluar berhasil ditambahkan!');
     }
 
     /**
-     * Tampilkan form edit surat keluar.
+     * Menampilkan detail surat keluar (opsional).
+     */
+    public function show(SuratKeluar $suratKeluar)
+    {
+        $suratKeluarCount = SuratKeluar::count();
+        $arsipSuratCount = \App\Models\ArsipSurat::count();
+
+        return view('surat-keluar.show', compact('suratKeluar', 'suratKeluarCount', 'arsipSuratCount'));
+    }
+
+    /**
+     * Menampilkan form edit surat keluar.
      */
     public function edit(SuratKeluar $suratKeluar)
     {
-        return view('surat-keluar.edit', compact('suratKeluar'));
+        $suratKeluarCount = SuratKeluar::count();
+        $arsipSuratCount = \App\Models\ArsipSurat::count();
+
+        return view('surat-keluar.edit', compact('suratKeluar', 'suratKeluarCount', 'arsipSuratCount'));
     }
 
     /**
-     * Update surat keluar di database.
+     * Memperbarui surat keluar.
      */
     public function update(Request $request, SuratKeluar $suratKeluar)
     {
         $request->validate([
-            'nomor_surat' => 'required|string|max:50',
-            'penerima' => 'required|string|max:100',
-            'tanggal_keluar' => 'required|date',
-            'perihal' => 'required|string',
+            'nomor_surat' => 'required|string|max:100|unique:surat_keluar,nomor_surat,' . $suratKeluar->id,
+            'tanggal_surat' => 'required|date',
+            'tujuan' => 'required|string|max:255',
+            'perihal' => 'required|string|max:255',
+            'file' => 'nullable|file|mimes:pdf|max:5120',
         ]);
 
-        $suratKeluar->update($request->all());
+        $data = [
+            'nomor_surat' => $request->nomor_surat,
+            'tanggal_surat' => $request->tanggal_surat,
+            'tujuan' => $request->tujuan,
+            'perihal' => $request->perihal,
+        ];
+
+        // Jika ada file baru diupload
+        if ($request->hasFile('file')) {
+            // Hapus file lama jika ada
+            if ($suratKeluar->file_path) {
+                Storage::disk('public')->delete($suratKeluar->file_path);
+            }
+            $data['file_path'] = $request->file('file')->store('surat-keluar', 'public');
+        }
+
+        $suratKeluar->update($data);
 
         return redirect()->route('surat-keluar.index')
-                         ->with('success', 'Surat keluar berhasil diperbarui.');
+                         ->with('success', 'Surat keluar berhasil diperbarui!');
     }
 
     /**
-     * Hapus surat keluar dari database.
+     * Menghapus surat keluar.
      */
     public function destroy(SuratKeluar $suratKeluar)
     {
+        if ($suratKeluar->file_path) {
+            Storage::disk('public')->delete($suratKeluar->file_path);
+        }
         $suratKeluar->delete();
 
         return redirect()->route('surat-keluar.index')
