@@ -31,26 +31,26 @@
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
+                                <th>No</th>
                                 <th>Nomor Surat</th>
-                                <th>Tujuan</th>
+                                <th>Alamat Penerima</th>
+                                <th>Tanggal</th>
                                 <th>Perihal</th>
-                                <th>Status</th>
+                                <th>Nomor Petunjuk</th>
+                                <th>Nomor Paket</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($letters as $letter)
                             <tr>
-                                <td>{{ $letter->nomor_surat }}</td>
-                                <td>{{ $letter->tujuan }}</td>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $letter->nomor_unit }} / {{ $letter->nomor_berkas }}</td>
+                                <td>{{ $letter->alamat_penerima }}</td>
+                                <td>{{ \Carbon\Carbon::parse($letter->tanggal_surat)->format('d/m/Y') }}</td>
                                 <td>{{ $letter->perihal }}</td>
-                                <td>
-                                    @if($letter->file_path)
-                                        <span class="badge bg-success">Tersedia</span>
-                                    @else
-                                        <span class="badge bg-warning">Belum Diunggah</span>
-                                    @endif
-                                </td>
+                                <td>{{ $letter->nomor_petunjuk ?? '—' }}</td>
+                                <td>{{ $letter->nomor_paket ?? '—' }}</td>
                                 <td>
                                     <a href="{{ route('surat-keluar.edit', $letter) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-edit"></i>

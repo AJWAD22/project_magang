@@ -10,10 +10,10 @@ class ArsipSuratController extends Controller
 {
     public function index()
     {
-        $archives = ArsipSurat::with('suratKeluar')->latest()->get();
+        $archives = ArsipSurat::latest()->paginate(15);
         $suratKeluarCount = SuratKeluar::count();
-        $arsipSuratCount = ArsipSurat::count(); // 🔥 Nama sesuai layout
-
+        $arsipSuratCount = ArsipSurat::count();
+    
         return view('arsip-surat.index', compact('archives', 'suratKeluarCount', 'arsipSuratCount'));
     }
 
@@ -29,15 +29,25 @@ class ArsipSuratController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'surat_keluar_id' => 'required|exists:App\Models\SuratKeluar,id', // ✅ Aman & konsisten
-            'kategori' => 'required|string|max:100',
+            'tanggal_arsip' => 'required|date',
+            'file' => 'required|file|mimes:pdf,doc,docx,txt|max:10240',
             'catatan' => 'nullable|string',
         ]);
-
-        ArsipSurat::create($request->only(['surat_keluar_id', 'kategori', 'catatan']));
-
+    
+        // Ambil nama file asli
+        $originalName = $request->file('file')->getClientOriginalName();
+    
+        // Simpan file dengan nama asli
+        $filePath = $request->file('file')->storeAs('arsip-surat', $originalName, 'public');
+    
+        ArsipSurat::create([
+            'tanggal_arsip' => $request->tanggal_arsip,
+            'file_path' => $filePath,
+            'catatan' => $request->catatan,
+        ]);
+    
         return redirect()->route('arsip-surat.index')
-                         ->with('success', 'Surat berhasil diarsipkan!');
+                         ->with('success', 'File berhasil diarsipkan!');
     }
 
     public function show(ArsipSurat $arsipSurat)

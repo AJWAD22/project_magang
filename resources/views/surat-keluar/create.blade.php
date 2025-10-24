@@ -16,32 +16,53 @@
             <form action="{{ route('surat-keluar.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
-                <div class="mb-3">
-                    <label for="nomor_surat" class="form-label">Nomor Surat</label>
-                    <input type="text" name="nomor_surat" id="nomor_surat" class="form-control" required>
+                <!-- Nomor Surat (Format: Nomor Unit / Nomor Berkas) -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="nomor_unit" class="form-label">Nomor Unit</label>
+                        <input type="text" name="nomor_unit" id="nomor_unit" class="form-control" placeholder="Contoh: 800/678" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="nomor_berkas" class="form-label">Nomor Berkas</label>
+                        <input type="text" name="nomor_berkas" id="nomor_berkas" class="form-control" placeholder="Contoh: 005/678.1" required>
+                    </div>
                 </div>
 
+                <!-- Alamat Penerima -->
+                <div class="mb-3">
+                    <label for="alamat_penerima" class="form-label">Alamat Penerima</label>
+                    <textarea name="alamat_penerima" id="alamat_penerima" class="form-control" rows="3" required></textarea>
+                </div>
+
+                <!-- Tanggal -->
                 <div class="mb-3">
                     <label for="tanggal_surat" class="form-label">Tanggal Surat</label>
                     <input type="date" name="tanggal_surat" id="tanggal_surat" class="form-control" required>
                 </div>
 
-                <div class="mb-3">
-                    <label for="tujuan" class="form-label">Tujuan</label>
-                    <input type="text" name="tujuan" id="tujuan" class="form-control" required>
-                </div>
-
+                <!-- Perihal -->
                 <div class="mb-3">
                     <label for="perihal" class="form-label">Perihal</label>
-                    <input type="text" name="perihal" id="perihal" class="form-control" required>
+                    <textarea name="perihal" id="perihal" class="form-control" rows="3" required></textarea>
                 </div>
 
-                <div class="mb-3">
-                    <label for="file" class="form-label">File Surat (PDF)</label>
-                    <input type="file" name="file" id="file" class="form-control" accept=".pdf" required>
+                <!-- Nomor Petunjuk & Nomor Paket -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="nomor_petunjuk" class="form-label">Nomor Petunjuk</label>
+                        <input type="text" name="nomor_petunjuk" id="nomor_petunjuk" class="form-control" placeholder="Contoh: DPPPA/VII/2025">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="nomor_paket" class="form-label">Nomor Paket</label>
+                        <input type="text" name="nomor_paket" id="nomor_paket" class="form-control" placeholder="Contoh: 2025">
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Simpan</button>
+                <!-- File Surat (PDF) -->
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Simpan
+                </button>
             </form>
         </div>
     </div>

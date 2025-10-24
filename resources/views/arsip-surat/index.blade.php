@@ -7,7 +7,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Daftar Arsip Surat</h4>
         <a href="{{ route('arsip-surat.create') }}" class="btn btn-primary btn-sm">
-            <i class="fas fa-plus"></i> Arsipkan Surat
+            <i class="fas fa-plus"></i> Arsipkan File
         </a>
     </div>
 
@@ -32,9 +32,9 @@
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Nomor Surat</th>
-                                <th>Tujuan</th>
-                                <th>Kategori</th>
+                                <th>Tanggal Arsip</th>
+                                <th>Nama File</th>
+                                <th>Catatan</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -42,31 +42,26 @@
                             @foreach($archives as $arsip)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
+                                <td>{{ \Carbon\Carbon::parse($arsip->tanggal_arsip)->format('d/m/Y') }}</td>
                                 <td>
-                                    @if($arsip->suratKeluar)
-                                        {{ $arsip->suratKeluar->nomor_surat }}
+                                    @if($arsip->file_path)
+                                        {{ basename($arsip->file_path) }}
                                     @else
-                                        <span class="text-muted">—</span>
+                                        —
                                     @endif
                                 </td>
+                                <td>{{ $arsip->catatan ?? '—' }}</td>
                                 <td>
-                                    @if($arsip->suratKeluar)
-                                        {{ $arsip->suratKeluar->tujuan }}
-                                    @else
-                                        <span class="text-muted">Surat tidak ditemukan</span>
-                                    @endif
-                                </td>
-                                <td>{{ $arsip->kategori }}</td>
-                                <td>
-                                    @if($arsip->suratKeluar && $arsip->suratKeluar->file_path)
-                                        <a href="{{ route('arsip-surat.download', $arsip) }}" class="btn btn-sm btn-outline-primary" title="Download">
+                                    @if($arsip->file_path)
+                                        <a href="{{ asset('storage/' . $arsip->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Lihat">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ asset('storage/' . $arsip->file_path) }}" download class="btn btn-sm btn-outline-success" title="Download">
                                             <i class="fas fa-download"></i>
                                         </a>
-                                    @else
-                                        <span class="text-muted">—</span>
                                     @endif
 
-                                    <form action="{{ route('arsip-surat.destroy', $arsip) }}" method="POST" style="display: inline;" title="Hapus">
+                                    <form action="{{ route('arsip-surat.destroy', $arsip) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus arsip ini?')">
@@ -80,7 +75,7 @@
                     </table>
                 </div>
 
-                <!-- Pagination (opsional) -->
+                <!-- Pagination -->
                 <div class="mt-3">
                     {{ $archives->links() }}
                 </div>

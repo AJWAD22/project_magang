@@ -13,7 +13,7 @@ class SuratKeluarController extends Controller
      */
     public function index()
     {
-        $letters = SuratKeluar::latest()->get();
+        $letters = SuratKeluar::latest()->paginate(15); // 15 data per halaman
         $suratKeluarCount = SuratKeluar::count();
         $arsipSuratCount = \App\Models\ArsipSurat::count();
 
@@ -37,27 +37,29 @@ class SuratKeluarController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nomor_surat' => 'required|string|max:100|unique:surat_keluar,nomor_surat',
+            'nomor_unit' => 'required|string|max:50',
+            'nomor_berkas' => 'required|string|max:50',
+            'alamat_penerima' => 'required|string',
             'tanggal_surat' => 'required|date',
-            'tujuan' => 'required|string|max:255',
-            'perihal' => 'required|string|max:255',
-            'file' => 'required|file|mimes:pdf|max:5120', // maks 5 MB
+            'perihal' => 'required|string',
+            'nomor_petunjuk' => 'nullable|string|max:50',
+            'nomor_paket' => 'nullable|string|max:50',
         ]);
-
-        $filePath = $request->file('file')->store('surat-keluar', 'public');
-
+    
+    
         SuratKeluar::create([
-            'nomor_surat' => $request->nomor_surat,
+            'nomor_unit' => $request->nomor_unit,
+            'nomor_berkas' => $request->nomor_berkas,
+            'alamat_penerima' => $request->alamat_penerima,
             'tanggal_surat' => $request->tanggal_surat,
-            'tujuan' => $request->tujuan,
             'perihal' => $request->perihal,
-            'file_path' => $filePath,
+            'nomor_petunjuk' => $request->nomor_petunjuk,
+            'nomor_paket' => $request->nomor_paket,
         ]);
-
+    
         return redirect()->route('surat-keluar.index')
                          ->with('success', 'Surat keluar berhasil ditambahkan!');
     }
-
     /**
      * Menampilkan detail surat keluar (opsional).
      */
