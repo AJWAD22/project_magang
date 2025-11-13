@@ -8,13 +8,21 @@ use Illuminate\Http\Request;
 
 class ArsipSuratController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $archives = ArsipSurat::latest()->paginate(15);
-        $suratKeluarCount = SuratKeluar::count();
-        $arsipSuratCount = ArsipSurat::count();
+        $query = ArsipSurat::query();
     
-        return view('arsip-surat.index', compact('archives', 'suratKeluarCount', 'arsipSuratCount'));
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('file_path', 'LIKE', "%{$search}%")
+                  ->orWhere('catatan', 'LIKE', "%{$search}%");
+            });
+        }
+    
+        $archives = $query->latest()->paginate(10); // atau sesuaikan jumlah per halaman
+    
+        return view('arsip-surat.index', compact('archives'));
     }
 
     public function create()

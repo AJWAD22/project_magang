@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SuratKeluar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class SuratKeluarController extends Controller
 {
@@ -49,7 +50,7 @@ class SuratKeluarController extends Controller
     
         SuratKeluar::create([
             'nomor_unit' => $request->nomor_unit,
-            'nomor_berkas' => $request->nomor_berkas,
+            'nomor_berkas' => $request->nomor_berkas,   
             'alamat_penerima' => $request->alamat_penerima,
             'tanggal_surat' => $request->tanggal_surat,
             'perihal' => $request->perihal,
@@ -76,9 +77,14 @@ class SuratKeluarController extends Controller
      */
     public function edit(SuratKeluar $suratKeluar)
     {
+        // Cek apakah client minta JSON
+        if (request()->wantsJson()) {
+            return response()->json($suratKeluar);
+        }
+    
+        // Jika tidak, tampilkan view
         $suratKeluarCount = SuratKeluar::count();
         $arsipSuratCount = \App\Models\ArsipSurat::count();
-
         return view('surat-keluar.edit', compact('suratKeluar', 'suratKeluarCount', 'arsipSuratCount'));
     }
 
@@ -87,36 +93,36 @@ class SuratKeluarController extends Controller
      */
     public function update(Request $request, SuratKeluar $suratKeluar)
     {
-        $request->validate([
-            'nomor_surat' => 'required|string|max:100|unique:surat_keluar,nomor_surat,' . $suratKeluar->id,
+        $validated = $request->validate([
+            'nomor_berkas' => 'required|string|max:50',
+            'alamat_penerima' => 'required|string',
             'tanggal_surat' => 'required|date',
-            'tujuan' => 'required|string|max:255',
-            'perihal' => 'required|string|max:255',
-            'file' => 'nullable|file|mimes:pdf|max:5120',
+            'perihal' => 'required|string',
+            'nomor_petunjuk' => 'nullable|string|max:50',
+            'nomor_paket' => 'nullable|string|max:50',
         ]);
-
-        $data = [
-            'nomor_surat' => $request->nomor_surat,
-            'tanggal_surat' => $request->tanggal_surat,
-            'tujuan' => $request->tujuan,
-            'perihal' => $request->perihal,
-        ];
-
-        // Jika ada file baru diupload
-        if ($request->hasFile('file')) {
-            // Hapus file lama jika ada
-            if ($suratKeluar->file_path) {
-                Storage::disk('public')->delete($suratKeluar->file_path);
-            }
-            $data['file_path'] = $request->file('file')->store('surat-keluar', 'public');
+    
+        $suratKeluar->update($validated);
+    
+        // Gunakan wantsJson() agar konsisten dengan edit()
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Surat berhasil diperbarui.',
+                'letter' => [
+                    'nomor_berkas' => $suratKeluar->nomor_berkas,
+                    'alamat_penerima' => $suratKeluar->alamat_penerima,
+                    'tanggal_surat' => \Carbon\Carbon::parse($suratKeluar->tanggal_surat)->format('d/m/Y'),
+                    'perihal' => $suratKeluar->perihal,
+                    'nomor_petunjuk' => $suratKeluar->nomor_petunjuk ?? '—',
+                    'nomor_paket' => $suratKeluar->nomor_paket ?? '—',
+                ]
+            ]);
         }
-
-        $suratKeluar->update($data);
-
+    
         return redirect()->route('surat-keluar.index')
                          ->with('success', 'Surat keluar berhasil diperbarui!');
     }
-
     /**
      * Menghapus surat keluar.
      */

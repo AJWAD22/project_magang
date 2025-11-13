@@ -12,7 +12,7 @@ class SuratKeluar extends Model
     protected $table = 'surat_keluar'; // ← jika Anda ganti nama tabel
 
   // app/Models/SuratKeluar.php
-protected $fillable = [
+  protected $fillable = [
     'nomor_unit',
     'nomor_berkas',
     'alamat_penerima',
@@ -20,6 +20,7 @@ protected $fillable = [
     'perihal',
     'nomor_petunjuk',
     'nomor_paket',
+    'file_path',
 ];
 
     public function arsipSurat()
